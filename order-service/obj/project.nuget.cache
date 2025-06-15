@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "3bMumtgdlz4=",
+  "dgSpecHash": "y3Plyo89Awo=",
   "success": true,
   "projectFilePath": "/Users/t.yakhyaev/RiderProjects/ShopOnline/order-service/OrderService.csproj",
   "expectedPackageFiles": [
@@ -59,18 +59,8 @@
       "code": "NU1603",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "ShopOnline.Shared depends on Microsoft.Extensions.Hosting (>= 8.0.5) but Microsoft.Extensions.Hosting 8.0.5 was not found. Microsoft.Extensions.Hosting 9.0.0 was resolved instead.",
+      "message": "ShopOnline.Shared depends on Microsoft.Extensions.Hosting (>= 8.0.4) but Microsoft.Extensions.Hosting 8.0.4 was not found. Microsoft.Extensions.Hosting 9.0.0 was resolved instead.",
       "libraryId": "Microsoft.Extensions.Hosting",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "OrderService depends on Npgsql.EntityFrameworkCore.PostgreSQL (>= 8.0.3) but Npgsql.EntityFrameworkCore.PostgreSQL 8.0.3 was not found. Npgsql.EntityFrameworkCore.PostgreSQL 8.0.4 was resolved instead.",
-      "libraryId": "Npgsql.EntityFrameworkCore.PostgreSQL",
       "targetGraphs": [
         "net8.0"
       ]

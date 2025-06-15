@@ -68,7 +68,7 @@
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
-              "version": "[8.0.3, )"
+              "version": "[8.0.4, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -148,7 +148,7 @@
             },
             "Microsoft.Extensions.Hosting": {
               "target": "Package",
-              "version": "[8.0.5, )"
+              "version": "[8.0.4, )"
             }
           },
           "imports": [
@@ -195,6 +195,9 @@
             "projectReferences": {
               "/Users/t.yakhyaev/RiderProjects/ShopOnline/payment-service/PaymentService.csproj": {
                 "projectPath": "/Users/t.yakhyaev/RiderProjects/ShopOnline/payment-service/PaymentService.csproj"
+              },
+              "/Users/t.yakhyaev/RiderProjects/ShopOnline/ShopOnline.Shared/ShopOnline.Shared.csproj": {
+                "projectPath": "/Users/t.yakhyaev/RiderProjects/ShopOnline/ShopOnline.Shared/ShopOnline.Shared.csproj"
               }
             }
           }
@@ -219,17 +222,15 @@
               "target": "Package",
               "version": "[7.1.0, )"
             },
+            "Microsoft.EntityFrameworkCore.InMemory": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            },
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
-              "version": "[17.8.0, )"
-            },
-            "Moq": {
-              "target": "Package",
-              "version": "[4.20.1, )"
+              "version": "[17.14.1, )"
             },
             "coverlet.collector": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
               "target": "Package",
               "version": "[6.0.0, )"
             },

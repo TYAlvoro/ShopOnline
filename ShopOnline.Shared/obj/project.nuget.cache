@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "8ohjOcljtR8=",
+  "dgSpecHash": "gUtUKM4vfz8=",
   "success": true,
   "projectFilePath": "/Users/t.yakhyaev/RiderProjects/ShopOnline/ShopOnline.Shared/ShopOnline.Shared.csproj",
   "expectedPackageFiles": [
@@ -49,7 +49,7 @@
       "code": "NU1603",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "ShopOnline.Shared depends on Microsoft.Extensions.Hosting (>= 8.0.5) but Microsoft.Extensions.Hosting 8.0.5 was not found. Microsoft.Extensions.Hosting 9.0.0 was resolved instead.",
+      "message": "ShopOnline.Shared depends on Microsoft.Extensions.Hosting (>= 8.0.4) but Microsoft.Extensions.Hosting 8.0.4 was not found. Microsoft.Extensions.Hosting 9.0.0 was resolved instead.",
       "libraryId": "Microsoft.Extensions.Hosting",
       "targetGraphs": [
         "net8.0"

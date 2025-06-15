@@ -1,7 +1,4 @@
 is_global = true
-build_property.DesignTimeBuild = True
-build_property.MSBuildProjectFullPath = /Users/t.yakhyaev/RiderProjects/ShopOnline/tests/PaymentService.Tests/PaymentService.Tests.csproj
-build_property.DebugSponsorLink = 
 build_property.TargetFramework = net8.0
 build_property.TargetPlatformMinVersion = 
 build_property.UsingMicrosoftNETSdkWeb = 

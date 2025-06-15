@@ -2113,7 +2113,7 @@
     "net8.0": [
       "Confluent.Kafka >= 2.10.1",
       "Microsoft.EntityFrameworkCore >= 8.0.5",
-      "Microsoft.Extensions.Hosting >= 8.0.5"
+      "Microsoft.Extensions.Hosting >= 8.0.4"
     ]
   },
   "packageFolders": {
@@ -2169,7 +2169,7 @@
           },
           "Microsoft.Extensions.Hosting": {
             "target": "Package",
-            "version": "[8.0.5, )"
+            "version": "[8.0.4, )"
           }
         },
         "imports": [
@@ -2197,7 +2197,7 @@
       "code": "NU1603",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "ShopOnline.Shared depends on Microsoft.Extensions.Hosting (>= 8.0.5) but Microsoft.Extensions.Hosting 8.0.5 was not found. Microsoft.Extensions.Hosting 9.0.0 was resolved instead.",
+      "message": "ShopOnline.Shared depends on Microsoft.Extensions.Hosting (>= 8.0.4) but Microsoft.Extensions.Hosting 8.0.4 was not found. Microsoft.Extensions.Hosting 9.0.0 was resolved instead.",
       "libraryId": "Microsoft.Extensions.Hosting",
       "targetGraphs": [
         "net8.0"

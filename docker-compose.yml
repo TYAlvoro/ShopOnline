@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks: [shopnetwork]
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on: [zookeeper]
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks: [shopnetwork]
+
+  orders-database:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: orders
+    networks: [shopnetwork]
+
+  payments-database:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: payments
+    networks: [shopnetwork]
+
+  order-service:
+    build: ./order-service
+    environment:
+      ConnectionStrings__OrdersDb: Host=orders-database;Database=orders;Username=user;Password=password
+      Kafka__BootstrapServers: kafka:9092
+      Kafka__OutboxTopic: orders.payments
+    depends_on: [orders-database, kafka]
+    networks: [shopnetwork]
+    ports:
+      - "8080:8080"
+
+  payment-service:
+    build: ./payment-service
+    environment:
+      ConnectionStrings__PaymentsDb: Host=payments-database;Database=payments;Username=user;Password=password
+      Kafka__BootstrapServers: kafka:9092
+      Kafka__OutboxTopic: orders.status
+    depends_on: [payments-database, kafka]
+    networks: [shopnetwork]
+    ports:
+      - "8081:8081"
+
+  api-gateway:
+    build: ./api-gateway
+    depends_on: [order-service, payment-service]
+    networks: [shopnetwork]
+    ports:
+      - "80:80"
+
+networks:
+  shopnetwork: {}

@@ -1,6 +1,7 @@
 namespace PaymentService.Models;
 
-public class Wallet
+public sealed class Wallet
 {
-    
+    public Guid UserId { get; set; }
+    public decimal Balance { get; set; }
 }

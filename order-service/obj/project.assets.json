@@ -1060,7 +1060,7 @@
         "dependencies": {
           "Confluent.Kafka": "2.10.1",
           "Microsoft.EntityFrameworkCore": "8.0.5",
-          "Microsoft.Extensions.Hosting": "8.0.5"
+          "Microsoft.Extensions.Hosting": "8.0.4"
         },
         "compile": {
           "bin/placeholder/ShopOnline.Shared.dll": {}
@@ -2695,7 +2695,7 @@
       "Confluent.Kafka >= 2.10.1",
       "Microsoft.AspNetCore.OpenApi >= 8.0.0",
       "Microsoft.EntityFrameworkCore >= 8.0.5",
-      "Npgsql.EntityFrameworkCore.PostgreSQL >= 8.0.3",
+      "Npgsql.EntityFrameworkCore.PostgreSQL >= 8.0.4",
       "ShopOnline.Shared >= 1.0.0",
       "Swashbuckle.AspNetCore >= 6.5.0"
     ]
@@ -2761,7 +2761,7 @@
           },
           "Npgsql.EntityFrameworkCore.PostgreSQL": {
             "target": "Package",
-            "version": "[8.0.3, )"
+            "version": "[8.0.4, )"
           },
           "Swashbuckle.AspNetCore": {
             "target": "Package",
@@ -2796,18 +2796,8 @@
       "code": "NU1603",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "ShopOnline.Shared depends on Microsoft.Extensions.Hosting (>= 8.0.5) but Microsoft.Extensions.Hosting 8.0.5 was not found. Microsoft.Extensions.Hosting 9.0.0 was resolved instead.",
+      "message": "ShopOnline.Shared depends on Microsoft.Extensions.Hosting (>= 8.0.4) but Microsoft.Extensions.Hosting 8.0.4 was not found. Microsoft.Extensions.Hosting 9.0.0 was resolved instead.",
       "libraryId": "Microsoft.Extensions.Hosting",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "OrderService depends on Npgsql.EntityFrameworkCore.PostgreSQL (>= 8.0.3) but Npgsql.EntityFrameworkCore.PostgreSQL 8.0.3 was not found. Npgsql.EntityFrameworkCore.PostgreSQL 8.0.4 was resolved instead.",
-      "libraryId": "Npgsql.EntityFrameworkCore.PostgreSQL",
       "targetGraphs": [
         "net8.0"
       ]
