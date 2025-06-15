@@ -38,7 +38,9 @@ services:
       - ./db-init/payments-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   order-service:
-    build: ./order-service
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
     environment:
       ConnectionStrings__OrdersDb: Host=orders-database;Database=orders;Username=user;Password=password
       Kafka__BootstrapServers: kafka:9092
@@ -49,7 +51,9 @@ services:
       - "8080:8080"
 
   payment-service:
-    build: ./payment-service
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
     environment:
       ConnectionStrings__PaymentsDb: Host=payments-database;Database=payments;Username=user;Password=password
       Kafka__BootstrapServers: kafka:9092
@@ -60,14 +64,18 @@ services:
       - "8081:8081"
 
   api-gateway:
-    build: ./api-gateway
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
     depends_on: [order-service, payment-service]
     networks: [shopnetwork]
     ports:
       - "80:80"
         
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     depends_on: [api-gateway]
     networks: [shopnetwork]
     ports:
