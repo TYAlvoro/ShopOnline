@@ -1,6 +1,16 @@
-import { io } from "socket.io-client";
+import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
-export const socket = io("ws://localhost/orders", {
-    transports: ["websocket"],
-    autoConnect: false
-});
+export let connection: HubConnection | null = null;
+
+export function connect(): HubConnection {
+    if (connection) return connection;
+
+    connection = new HubConnectionBuilder()
+        // API-gateway бегает на 80-м порту, маршрут /orders проксируется в Order-service
+        .withUrl("http://localhost/orders")
+        .withAutomaticReconnect()
+        .configureLogging(LogLevel.Information)
+        .build();
+
+    return connection;
+}
