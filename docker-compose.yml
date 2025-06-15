@@ -24,6 +24,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_DB: orders
     networks: [shopnetwork]
+    volumes:
+      - ./db-init/orders-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   payments-database:
     image: postgres:16
@@ -32,6 +34,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_DB: payments
     networks: [shopnetwork]
+    volumes:
+      - ./db-init/payments-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   order-service:
     build: ./order-service
