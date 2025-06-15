@@ -31,4 +31,13 @@ public sealed class WalletServiceTests
         (await _walletService.GetBalanceAsync(userId)).Should().Be(100m);
         _databaseContext.Outbox.Should().ContainSingle();
     }
+    
+    [Fact]
+    public async Task TryCreateWallet_ShouldReturnFalse_WhenWalletExists()
+    {
+        var userId = Guid.NewGuid();
+        await _walletService.TryCreateWalletAsync(userId);
+        (await _walletService.TryCreateWalletAsync(userId)).Should().BeFalse();
+    }
+
 }

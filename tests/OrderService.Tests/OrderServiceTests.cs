@@ -29,4 +29,20 @@ public sealed class OrderServiceTests
         _databaseContext.Orders.Should().ContainSingle();
         _databaseContext.Outbox.Should().ContainSingle();
     }
+    
+    [Fact]
+    public async Task ListAsync_ShouldReturnCreatedOrder()
+    {
+        var userId = Guid.NewGuid();
+        await _orderService.CreateAsync(userId, 10m);
+        var list = await _orderService.ListAsync(userId);
+        list.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task GetAsync_ShouldReturnNull_WhenNotExists()
+    {
+        (await _orderService.GetAsync(Guid.NewGuid())).Should().BeNull();
+    }
+
 }
