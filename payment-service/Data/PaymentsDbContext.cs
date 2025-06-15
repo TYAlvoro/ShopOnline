@@ -21,7 +21,7 @@ public sealed class PaymentsDbContext(DbContextOptions<PaymentsDbContext> option
             b.Property(w => w.UserId).HasColumnName("userid");
             b.Property(w => w.Balance).HasColumnName("balance");
         });
-        
+
         modelBuilder.Entity<Transaction>(b =>
         {
             b.ToTable("transactions");

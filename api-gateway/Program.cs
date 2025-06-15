@@ -14,6 +14,12 @@ builder.Services.AddReverseProxy()
             },
             new RouteConfig
             {
+                RouteId = "orders-hub",
+                ClusterId = "orders-cluster",
+                Match = new RouteMatch { Path = "/hub/orders/{**catchAll}" }
+            },
+            new RouteConfig
+            {
                 RouteId = "payments",
                 ClusterId = "payments-cluster",
                 Match = new RouteMatch { Path = "/payments/{**catchAll}" }
@@ -39,12 +45,12 @@ builder.Services.AddReverseProxy()
                 {
                     ["primary"] = new DestinationConfig
                     {
-                        Address = "http://payment-service:8081/"
+                        Address = "http://payment-service:8080/"
                     }
                 }
             }
         ]);
 
-var application = builder.Build();
-application.MapReverseProxy();
-application.Run();
+var app = builder.Build();
+app.MapReverseProxy();
+app.Run();
