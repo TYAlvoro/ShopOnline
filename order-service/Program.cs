@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderService.Data;
 using OrderService.Hubs;
+using OrderService.Messaging;
 using OrderService.Services;
 using ShopOnline.Shared.Messaging;
 using ShopOnline.Shared.Outbox;
@@ -14,7 +15,8 @@ builder.Services.AddDbContext<OrdersDbContext>(o =>
 
 builder.Services.AddScoped<IOrderService, OrderService.Services.OrderService>();
 builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
-builder.Services.AddHostedService<OutboxPublisher<OrdersDbContext>>();
+builder.Services.AddHostedService<OutboxPublisher<OrdersDbContext, OrderHub>>();
+builder.Services.AddHostedService<KafkaConsumer>();
 builder.Services.AddSignalR();
 builder.Services.AddCors(o =>
     o.AddPolicy("frontend", p => p

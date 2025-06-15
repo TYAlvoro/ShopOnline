@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using PaymentService.Data;
 using PaymentService.Messaging;
@@ -14,7 +15,7 @@ builder.Services.AddDbContext<PaymentsDbContext>(o =>
 
 builder.Services.AddScoped<IWalletService, WalletService>();
 builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
-builder.Services.AddHostedService<OutboxPublisher<PaymentsDbContext>>();
+builder.Services.AddHostedService<OutboxPublisher<PaymentsDbContext, Hub>>();
 builder.Services.AddHostedService<KafkaConsumer>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

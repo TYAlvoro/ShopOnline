@@ -2,7 +2,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS wallets (
                                        userid   UUID       PRIMARY KEY,
-                                       balance  NUMERIC    NOT NULL DEFAULT 0
+                                       balance  NUMERIC    NOT NULL DEFAULT 0,
+                                       version  INTEGER    NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS transactions (

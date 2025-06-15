@@ -20,6 +20,9 @@ public sealed class PaymentsDbContext(DbContextOptions<PaymentsDbContext> option
             b.HasKey(w => w.UserId);
             b.Property(w => w.UserId).HasColumnName("userid");
             b.Property(w => w.Balance).HasColumnName("balance");
+            b.Property(w => w.Version)
+                .HasColumnName("version")
+                .IsConcurrencyToken();
         });
 
         modelBuilder.Entity<Transaction>(b =>

@@ -8,6 +8,7 @@ public sealed class OrdersDbContext(DbContextOptions<OrdersDbContext> options)
     : DbContext(options), IOutboxDbContext
 {
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<InboxMessage> Inbox => Set<InboxMessage>();
     public DbSet<OutboxMessage> Outbox => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -21,6 +22,13 @@ public sealed class OrdersDbContext(DbContextOptions<OrdersDbContext> options)
             b.Property(o => o.Amount).HasColumnName("amount");
             b.Property(o => o.Status).HasColumnName("status");
             b.Property(o => o.CreatedAt).HasColumnName("createdat");
+        });
+        
+        modelBuilder.Entity<InboxMessage>(b =>
+        {
+            b.ToTable("inbox");
+            b.HasKey(i => i.Id);
+            b.Property(i => i.Id).HasColumnName("id");
         });
 
         modelBuilder.Entity<OutboxMessage>(b =>
