@@ -14,7 +14,7 @@ builder.Services.AddDbContext<OrdersDbContext>(o =>
 
 builder.Services.AddScoped<IOrderService, OrderService.Services.OrderService>();
 builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
-builder.Services.AddHostedService<OutboxPublisher<OrdersDbContext>>();
+builder.Services.AddHostedService<OutboxPublisher<OrdersDbContext, OrderHub>>();
 builder.Services.AddSignalR();
 builder.Services.AddCors(o =>
     o.AddPolicy("frontend", p => p

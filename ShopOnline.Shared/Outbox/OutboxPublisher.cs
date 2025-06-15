@@ -8,13 +8,14 @@ using ShopOnline.Shared.Messaging;
 
 namespace ShopOnline.Shared.Outbox;
 
-public sealed class OutboxPublisher<TDatabaseContext>(
+public sealed class OutboxPublisher<TDatabaseContext, THub>(
     IServiceProvider serviceProvider,
     IKafkaProducer kafkaProducer,
     IConfiguration configuration,
-    ILogger<OutboxPublisher<TDatabaseContext>> logger)
+    ILogger<OutboxPublisher<TDatabaseContext, THub>> logger)
     : BackgroundService
     where TDatabaseContext : DbContext, IOutboxDbContext
+    where THub : Hub
 {
     private readonly string _topic =
         configuration["Kafka:OutboxTopic"] ?? Topics.OrdersPayments;
@@ -27,7 +28,7 @@ public sealed class OutboxPublisher<TDatabaseContext>(
             {
                 await using var scope = serviceProvider.CreateAsyncScope();
                 var databaseContext = scope.ServiceProvider.GetRequiredService<TDatabaseContext>();
-                var hubContext = scope.ServiceProvider.GetService<IHubContext<Hub>>();
+                var hubContext = scope.ServiceProvider.GetService<IHubContext<THub>>();
 
                 var outboxMessages = await databaseContext.Outbox
                     .Where(message => message.ProcessedAt == null)
