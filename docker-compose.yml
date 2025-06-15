@@ -65,6 +65,15 @@ services:
     networks: [shopnetwork]
     ports:
       - "80:80"
+        
+  frontend:
+    build: ./frontend
+    depends_on: [api-gateway]
+    networks: [shopnetwork]
+    ports:
+      - "5173:80"
+
+
 
 networks:
   shopnetwork: {}

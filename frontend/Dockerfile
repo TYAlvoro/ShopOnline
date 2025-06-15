@@ -1,9 +1,9 @@
 ﻿FROM node:20-alpine AS build
 WORKDIR /app
-COPY frontend/package*.json ./
-RUN npm ci
-COPY frontend/ .
-RUN npm run build
+COPY package.json tsconfig.json vite.config.ts ./
+COPY src ./src
+COPY index.html ./
+RUN npm ci && npm run build
 
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
