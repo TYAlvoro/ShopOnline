@@ -46,4 +46,16 @@ public sealed class WalletService(
         var wallet = await databaseContext.Wallets.FindAsync([userId], cancellationToken);
         return wallet?.Balance ?? 0m;
     }
+    
+    public async Task<bool> TryCreateWalletAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        if (await databaseContext.Wallets.AnyAsync(w => w.UserId == userId, cancellationToken))
+            return false;
+
+        databaseContext.Wallets.Add(new Wallet { UserId = userId, Balance = 0 });
+        await databaseContext.SaveChangesAsync(cancellationToken);
+        return true;
+    }
 }

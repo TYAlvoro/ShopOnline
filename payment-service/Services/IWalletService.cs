@@ -8,4 +8,7 @@ public interface IWalletService
 
     Task<decimal> GetBalanceAsync(Guid userId,
         CancellationToken cancellationToken = default);
+    
+    Task<bool> TryCreateWalletAsync(Guid userId, 
+        CancellationToken cancellationToken = default);
 }

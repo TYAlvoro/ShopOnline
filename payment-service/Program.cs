@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PaymentService.Data;
+using PaymentService.Messaging;
 using PaymentService.Services;
 using ShopOnline.Shared.Messaging;
 using ShopOnline.Shared.Outbox;
@@ -14,6 +15,7 @@ builder.Services.AddScoped<IWalletService, WalletService>();
 
 builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
 builder.Services.AddHostedService<OutboxPublisher<PaymentsDbContext>>();
+builder.Services.AddHostedService<KafkaConsumer>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
