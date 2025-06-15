@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
@@ -13,8 +11,13 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ["CMD-SHELL", "echo > /dev/tcp/localhost/9092"]
+      interval: 5s
+      retries: 10
     networks: [shopnetwork]
 
   orders-database:
@@ -23,9 +26,15 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: user
       POSTGRES_DB: orders
-    networks: [shopnetwork]
     volumes:
       - ./db-init/orders-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d orders"]
+      interval: 3s
+      retries: 10
+    networks: [shopnetwork]
+    ports:
+      - "5433:5432"
 
   payments-database:
     image: postgres:16
@@ -33,9 +42,13 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: user
       POSTGRES_DB: payments
-    networks: [shopnetwork]
     volumes:
       - ./db-init/payments-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d payments"]
+      interval: 3s
+      retries: 10
+    networks: [shopnetwork]
 
   order-service:
     build:
@@ -45,10 +58,11 @@ services:
       ConnectionStrings__OrdersDb: Host=orders-database;Database=orders;Username=user;Password=password
       Kafka__BootstrapServers: kafka:9092
       Kafka__OutboxTopic: orders.payments
-    depends_on: [orders-database, kafka]
+    depends_on:
+      kafka:           { condition: service_healthy }
+      orders-database: { condition: service_healthy }
+    ports: [ "8080:8080" ]
     networks: [shopnetwork]
-    ports:
-      - "8080:8080"
 
   payment-service:
     build:
@@ -58,20 +72,22 @@ services:
       ConnectionStrings__PaymentsDb: Host=payments-database;Database=payments;Username=user;Password=password
       Kafka__BootstrapServers: kafka:9092
       Kafka__OutboxTopic: orders.status
-    depends_on: [payments-database, kafka]
+    depends_on:
+      kafka:              { condition: service_healthy }
+      payments-database:  { condition: service_healthy }
+    ports: [ "8081:8081" ]
     networks: [shopnetwork]
-    ports:
-      - "8081:8081"
 
   api-gateway:
     build:
       context: .
       dockerfile: api-gateway/Dockerfile
-    depends_on: [order-service, payment-service]
+    depends_on:
+      order-service:    { condition: service_started }
+      payment-service:  { condition: service_started }
+    ports: [ "80:80" ]
     networks: [shopnetwork]
-    ports:
-      - "80:80"
-        
+  
   frontend:
     build:
       context: ./frontend
@@ -80,8 +96,6 @@ services:
     networks: [shopnetwork]
     ports:
       - "5173:80"
-
-
 
 networks:
   shopnetwork: {}

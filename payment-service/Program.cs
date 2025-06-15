@@ -6,22 +6,30 @@ using ShopOnline.Shared.Messaging;
 using ShopOnline.Shared.Outbox;
 
 var builder = WebApplication.CreateBuilder(args);
-var configuration = builder.Configuration;
+var cfg = builder.Configuration;
 
-builder.Services.AddDbContext<PaymentsDbContext>(options =>
-    options.UseNpgsql(configuration.GetConnectionString("PaymentsDb")));
+builder.Services.AddControllers();
+builder.Services.AddDbContext<PaymentsDbContext>(o =>
+    o.UseNpgsql(cfg.GetConnectionString("PaymentsDb")));
 
 builder.Services.AddScoped<IWalletService, WalletService>();
-
 builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
 builder.Services.AddHostedService<OutboxPublisher<PaymentsDbContext>>();
 builder.Services.AddHostedService<KafkaConsumer>();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Configure<HostOptions>(h =>
+    h.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore);
 
-var application = builder.Build();
-application.UseSwagger();
-application.UseSwaggerUI();
-application.MapControllers();
-application.Run();
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<PaymentsDbContext>();
+    await db.Database.EnsureCreatedAsync();
+}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+app.MapControllers();
+app.Run();

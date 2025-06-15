@@ -9,10 +9,10 @@ using ShopOnline.Shared.Messaging;
 namespace ShopOnline.Shared.Outbox;
 
 public sealed class OutboxPublisher<TDatabaseContext>(
-        IServiceProvider serviceProvider,
-        IKafkaProducer kafkaProducer,
-        IConfiguration configuration,
-        ILogger<OutboxPublisher<TDatabaseContext>> logger)
+    IServiceProvider serviceProvider,
+    IKafkaProducer kafkaProducer,
+    IConfiguration configuration,
+    ILogger<OutboxPublisher<TDatabaseContext>> logger)
     : BackgroundService
     where TDatabaseContext : DbContext, IOutboxDbContext
 {
@@ -23,34 +23,44 @@ public sealed class OutboxPublisher<TDatabaseContext>(
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            await using var scope = serviceProvider.CreateAsyncScope();
-            var db = scope.ServiceProvider.GetRequiredService<TDatabaseContext>();
-            var hub = scope.ServiceProvider.GetService<IHubContext<Hub>>();
-
-            var messages = await db.Outbox
-                .Where(m => m.ProcessedAt == null)
-                .OrderBy(m => m.OccurredOn)
-                .Take(50)
-                .ToListAsync(cancellationToken);
-
-            foreach (var message in messages)
+            try
             {
-                await kafkaProducer.PublishAsync(
-                    _topic,
-                    message.Id.ToString(),
-                    message.Payload,
-                    cancellationToken);
+                await using var scope = serviceProvider.CreateAsyncScope();
+                var databaseContext = scope.ServiceProvider.GetRequiredService<TDatabaseContext>();
+                var hubContext = scope.ServiceProvider.GetService<IHubContext<Hub>>();
 
-                if (hub is not null)
-                    await hub.Clients.All.SendAsync(message.Type, message.Payload, cancellationToken);
+                var outboxMessages = await databaseContext.Outbox
+                    .Where(message => message.ProcessedAt == null)
+                    .OrderBy(message => message.OccurredOn)
+                    .Take(50)
+                    .ToListAsync(cancellationToken);
 
-                message.ProcessedAt = DateTime.UtcNow;
+                foreach (var message in outboxMessages)
+                {
+                    await kafkaProducer.PublishAsync(
+                        _topic,
+                        message.Id.ToString(),
+                        message.Payload,
+                        cancellationToken);
+
+                    if (hubContext is not null)
+                        await hubContext.Clients.All.SendAsync(
+                            message.Type,
+                            message.Payload,
+                            cancellationToken);
+
+                    message.ProcessedAt = DateTime.UtcNow;
+                }
+
+                if (outboxMessages.Count > 0)
+                    await databaseContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                logger.LogWarning(exception, "Outbox publishing failed, retrying");
             }
 
-            if (messages.Count > 0)
-                await db.SaveChangesAsync(cancellationToken);
-
-            await Task.Delay(800, cancellationToken);
+            await Task.Delay(TimeSpan.FromMilliseconds(800), cancellationToken);
         }
     }
 }
