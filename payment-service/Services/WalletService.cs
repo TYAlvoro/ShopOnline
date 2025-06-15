@@ -17,11 +17,22 @@ public sealed class WalletService(
         decimal amount,
         CancellationToken cancellationToken = default)
     {
-        var wallet = await databaseContext.Wallets.FindAsync([userId], cancellationToken)
-                     ?? new Wallet { UserId = userId };
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount),
+                "Amount must be positive");
 
-        wallet.Balance += amount;
-        databaseContext.Wallets.Update(wallet);
+        var wallet = await databaseContext.Wallets.FindAsync([userId], cancellationToken);
+
+        if (wallet is null)
+        {
+            // первый депозит ⇒ создаём кошелёк
+            wallet = new Wallet { UserId = userId, Balance = amount };
+            databaseContext.Wallets.Add(wallet);
+        }
+        else
+        {
+            wallet.Balance += amount;
+        }
 
         databaseContext.Transactions.Add(new Transaction
         {
@@ -31,12 +42,12 @@ public sealed class WalletService(
 
         databaseContext.Outbox.Add(new OutboxMessage
         {
-            Type = nameof(PaymentCompleted),
+            Type    = nameof(PaymentCompleted),
             Payload = JsonSerializer.Serialize(new PaymentCompleted(Guid.Empty))
         });
 
         await databaseContext.SaveChangesAsync(cancellationToken);
-        logger.LogInformation("Wallet for user {UserId} credited by {Amount}", userId, amount);
+        logger.LogInformation("Wallet {UserId} credited by {Amount}", userId, amount);
     }
 
     public async Task<decimal> GetBalanceAsync(

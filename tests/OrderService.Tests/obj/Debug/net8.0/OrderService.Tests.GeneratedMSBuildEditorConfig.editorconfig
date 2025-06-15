@@ -1,5 +1,5 @@
 is_global = true
-build_property.DesignTimeBuild = True
+build_property.DesignTimeBuild = 
 build_property.MSBuildProjectFullPath = /Users/t.yakhyaev/RiderProjects/ShopOnline/tests/OrderService.Tests/OrderService.Tests.csproj
 build_property.DebugSponsorLink = 
 build_property.TargetFramework = net8.0
