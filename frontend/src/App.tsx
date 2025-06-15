@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
+/*
+ * Хаб живёт за API-gateway’ем (порт 80).
+ * Используем абсолютный URL, чтобы не цепляться за порт фронта.
+ */
 const HUB_URL = "http://localhost/hub/orders";
 
 export default function App() {
-    const [status, setStatus] = useState<string | null>(null);
-    const [connected, setConnected] = useState(false);
+    const [status,     setStatus]     = useState<string | null>(null);
+    const [connected,  setConnected]  = useState(false);
 
     useEffect(() => {
         const connection = new HubConnectionBuilder()
@@ -17,7 +21,7 @@ export default function App() {
         connection
             .start()
             .then(() => setConnected(true))
-            .catch(() => setStatus("❌ Не удалось подключиться к хабу"));
+            .catch(()  => setStatus("❌ Не удалось подключиться к хабу"));
 
         connection.on("PaymentCompleted", () =>
             setStatus("🟢 Заказ оплачен"));
@@ -31,9 +35,17 @@ export default function App() {
         <main style={{ fontFamily: "sans-serif", padding: "2rem" }}>
             <h1>ShopOnline demo front-end</h1>
 
-            <p>{connected ? "Соединение с SignalR установлено" : "Подключаемся к SignalR…"}</p>
+            <p>
+                {connected
+                    ? "Соединение с SignalR установлено"
+                    : "Подключаемся к SignalR…"}
+            </p>
 
-            {status && <p style={{ marginTop: "1rem", fontSize: "1.25rem" }}>{status}</p>}
+            {status && (
+                <p style={{ marginTop: "1rem", fontSize: "1.25rem" }}>
+                    {status}
+                </p>
+            )}
 
             <p style={{ marginTop: "2rem" }}>
                 Создайте заказ через Swagger и наблюдайте уведомления здесь.
