@@ -1,6 +1,6 @@
 namespace ShopOnline.Shared.Messaging;
 
-public class IKafkaProducer
+public interface IKafkaProducer
 {
-    
+    Task PublishAsync(string topic, string key, string value, CancellationToken cancellationToken = default);
 }

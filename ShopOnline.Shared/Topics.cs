@@ -1,6 +1,7 @@
 namespace ShopOnline.Shared;
 
-public class Topics
+public static class Topics
 {
-    
+    public const string OrdersPayments = "orders.payments";
+    public const string OrdersStatus   = "orders.status";
 }

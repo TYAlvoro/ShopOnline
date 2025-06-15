@@ -1,6 +1,3 @@
 namespace ShopOnline.Shared.Dtos;
 
-public class CreateOrderDto
-{
-    
-}
+public record CreateOrderDto(decimal Amount, Guid? UserId = null);
