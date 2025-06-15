@@ -14,8 +14,30 @@ public sealed class PaymentsDbContext(DbContextOptions<PaymentsDbContext> option
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Wallet>().HasKey(wallet => wallet.UserId);
-        modelBuilder.Entity<InboxMessage>().ToTable("inbox").HasKey(i => i.Id);
-        modelBuilder.Entity<OutboxMessage>().ToTable("outbox");
+        modelBuilder.Entity<Wallet>(b =>
+        {
+            b.ToTable("wallets");
+            b.HasKey(w => w.UserId);
+            b.Property(w => w.UserId).HasColumnName("userid");
+            b.Property(w => w.Balance).HasColumnName("balance");
+        });
+
+        modelBuilder.Entity<InboxMessage>(b =>
+        {
+            b.ToTable("inbox");
+            b.HasKey(i => i.Id);
+            b.Property(i => i.Id).HasColumnName("id");
+        });
+
+        modelBuilder.Entity<OutboxMessage>(b =>
+        {
+            b.ToTable("outbox");
+            b.HasKey(m => m.Id);
+            b.Property(m => m.Id).HasColumnName("id");
+            b.Property(m => m.OccurredOn).HasColumnName("occurredon");
+            b.Property(m => m.Type).HasColumnName("type");
+            b.Property(m => m.Payload).HasColumnName("payload");
+            b.Property(m => m.ProcessedAt).HasColumnName("processedat");
+        });
     }
 }
