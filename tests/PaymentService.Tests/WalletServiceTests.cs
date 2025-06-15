@@ -40,4 +40,12 @@ public sealed class WalletServiceTests
         (await _walletService.TryCreateWalletAsync(userId)).Should().BeFalse();
     }
 
+    [Fact]
+    public async Task DepositAsync_ShouldFail_WhenNegativeAmount()
+    {
+        var userId = Guid.NewGuid();
+        await _walletService.Invoking(s => s.DepositAsync(userId, -10m))
+            .Should()
+            .ThrowAsync<ArgumentOutOfRangeException>();
+    }
 }

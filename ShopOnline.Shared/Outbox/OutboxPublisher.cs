@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,10 +9,10 @@ using ShopOnline.Shared.Messaging;
 namespace ShopOnline.Shared.Outbox;
 
 public sealed class OutboxPublisher<TDatabaseContext>(
-    IServiceProvider serviceProvider,
-    IKafkaProducer kafkaProducer,
-    IConfiguration configuration,
-    ILogger<OutboxPublisher<TDatabaseContext>> logger)
+        IServiceProvider serviceProvider,
+        IKafkaProducer kafkaProducer,
+        IConfiguration configuration,
+        ILogger<OutboxPublisher<TDatabaseContext>> logger)
     : BackgroundService
     where TDatabaseContext : DbContext, IOutboxDbContext
 {
@@ -23,31 +24,33 @@ public sealed class OutboxPublisher<TDatabaseContext>(
         while (!cancellationToken.IsCancellationRequested)
         {
             await using var scope = serviceProvider.CreateAsyncScope();
-            var databaseContext = scope.ServiceProvider.GetRequiredService<TDatabaseContext>();
+            var db = scope.ServiceProvider.GetRequiredService<TDatabaseContext>();
+            var hub = scope.ServiceProvider.GetService<IHubContext<Hub>>();
 
-            var outboxMessages = await databaseContext.Outbox
-                .Where(outboxMessage => outboxMessage.ProcessedAt == null)
-                .OrderBy(outboxMessage => outboxMessage.OccurredOn)
-                .Take(30)
+            var messages = await db.Outbox
+                .Where(m => m.ProcessedAt == null)
+                .OrderBy(m => m.OccurredOn)
+                .Take(50)
                 .ToListAsync(cancellationToken);
 
-            foreach (var outboxMessage in outboxMessages)
+            foreach (var message in messages)
             {
                 await kafkaProducer.PublishAsync(
                     _topic,
-                    outboxMessage.Id.ToString(),
-                    outboxMessage.Payload,
+                    message.Id.ToString(),
+                    message.Payload,
                     cancellationToken);
 
-                outboxMessage.ProcessedAt = DateTime.UtcNow;
+                if (hub is not null)
+                    await hub.Clients.All.SendAsync(message.Type, message.Payload, cancellationToken);
+
+                message.ProcessedAt = DateTime.UtcNow;
             }
 
-            if (outboxMessages.Count > 0)
-            {
-                await databaseContext.SaveChangesAsync(cancellationToken);
-            }
+            if (messages.Count > 0)
+                await db.SaveChangesAsync(cancellationToken);
 
-            await Task.Delay(TimeSpan.FromMilliseconds(800), cancellationToken);
+            await Task.Delay(800, cancellationToken);
         }
     }
 }

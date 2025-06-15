@@ -44,5 +44,15 @@ public sealed class OrderServiceTests
     {
         (await _orderService.GetAsync(Guid.NewGuid())).Should().BeNull();
     }
+    
+    [Fact]
+    public async Task CreateAsync_ShouldEmitCorrectPayload()
+    {
+        var userId = Guid.NewGuid();
+        var order  = await _orderService.CreateAsync(userId, 42m);
 
+        var msg = _databaseContext.Outbox.Single();
+        msg.Payload.Should().Contain(order.Id.ToString());
+        msg.Payload.Should().Contain("42");
+    }
 }
