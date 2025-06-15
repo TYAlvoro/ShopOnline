@@ -72,6 +72,7 @@ services:
       ConnectionStrings__PaymentsDb: Host=payments-database;Database=payments;Username=user;Password=password
       Kafka__BootstrapServers: kafka:9092
       Kafka__OutboxTopic: orders.status
+      ASPNETCORE_ENVIRONMENT: Development
     depends_on:
       kafka:              { condition: service_healthy }
       payments-database:  { condition: service_healthy }

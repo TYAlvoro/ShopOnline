@@ -7,12 +7,14 @@ namespace PaymentService.Controllers;
 [Route("payments")]
 public sealed class PaymentsController(IWalletService walletService) : ControllerBase
 {
+    public record DepositRequest(decimal Amount);
+
     [HttpPost("deposit")]
     public async Task<IActionResult> Deposit(
         [FromHeader(Name = "user_id")] Guid userId,
-        [FromBody] decimal amount)
+        [FromBody] DepositRequest request)
     {
-        await walletService.DepositAsync(userId, amount);
+        await walletService.DepositAsync(userId, request.Amount);
         return Accepted();
     }
 
